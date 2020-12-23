@@ -3,60 +3,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New User</title>
+    <title>Users</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
-          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
 </head>
 <body>
-<div class="text-center mt-4">
-    <form style="max-width: 400px; margin: auto" th:action="@{/admin/new}" th:method="POST" th:object="${user}">
-        <img class="mt-4 mb-4" src="https://cdn.worldvectorlogo.com/logos/bootstrap-5-1.svg" height="72"
-             alt="Bootstrap Logo">
+<div class="container">
+    <div class="row">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
 
-        <h1 class="h3 mb-3 font-weight-normal">Create user</h1>
-        <div class="text-center mt-5">
 
-            <label for="login" class="sr-only">Username</label>
-            <input type="text" th:field="*{username}" id="login" class="form-control" required
-                   autofocus/>
+                <div class="d-flex justify-content-start"><a
+                        th:text="|${currentUser.username} with roles: |">USERNAME</a>
 
-            <label for="password" class="sr-only">Password</label>
-            <input type="text" th:field="*{password}" id="password" class="form-control"/>
-
-            <div class="mt-3">
-                <label>Roles:</label>
-                <div class="form-check mt-3" th:each="role : ${showRoles}">
-                    <div>   <input class="form-check-input form-switch" type="checkbox" name="roles"
-
-                                   th:text="${role.name}"
-                                   th:value="${role.id}"
-                                   th:field="*{roles}"
-                    /></div>
+                    <a th:each="role: ${currentUser.getRoles()}">
+                        <div class="d-flex justify-content-start"><a th:text="${role.getName()} ">role</a></div>
+                    </a>
                 </div>
-                <input type="submit" value="Create new user" class="btn btn-warning btn-lg mt-3">
-                <a href="/admin/users" class="btn btn-primary btn-lg mt-3">Back</a>
-                <form th:method="POST" th:action="@{/logout}">
-                    <input type="hidden"
-                           name="${_csrf.parameterName}"
-                           value="${_csrf.token}"/>
-                    <input type="submit" value="Logout" class="btn btn-primary btn-lg mt-3">
+
+                <form class="d-flex" th:method="POST" th:action="@{/logout}">
+                    <input type="submit" value="Logout" class="btn btn-outline-success">
+
                 </form>
             </div>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-2">
+            <ul class="nav nav-pills nav-fill mt-4" aria-orientation="vertical">
+                <div class="column">
+                    <li class="nav-item">
+
+                        <a class="nav-link active" aria-current="page" href="/admin/users/">Admin</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/user/userspace/{id}(id=${currentUser.getId()})}">User</a>
+                    </li>
+                </div>
+            </ul>
         </div>
-    </form>
+        <div class="col-8  text-center">
+            <div class="mt-4 mb-4">
+                <h1>Admin panel</h1>
+            </div>
+            <div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/admin/users">User table</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/new">New user</a>
+                    </li>
+                </ul>
+            </div>
+            <form style="max-width: 400px; margin: auto" th:action="@{/admin/new}" th:method="POST" th:object="${user}">
+
+                <h1 class="h3 mb-3 font-weight-normal mt-4">Create user</h1>
+                <div class="d-grid gap-2 col-6 mx-auto">
+
+                    <label for="login" class="sr-only">Username</label>
+                    <input type="text" th:field="*{username}" id="login" class="form-control" required
+                           autofocus/>
+
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="text" th:field="*{password}" id="password" class="form-control"/>
+
+                    <div class="mt-2">
+                        <label>Roles:</label>
+
+                        <select class="form-select mt-2" size="2" multiple aria-label="size 2 multiple select example" th:field="*{roles}">
+
+                                <option th:each="role : ${showRoles}" name="roles" th:text="${role.name}" th:value="${role.id}">One</option>
+
+                        </select>
+
+                    </div>
+                </div>
+
+
+                <input type="submit" value="Create new user" class="btn btn-warning mt-3">
+            </form>
+        </div>
+    </div>
+
 </div>
+
+
 <!-- Option 2: Separate Popper and Bootstrap JS -->
-<script crossorigin="anonymous"
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
         integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU"
-        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script crossorigin="anonymous"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"
         integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj"
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"></script>
+        crossorigin="anonymous"></script>
 </body>
 </html>

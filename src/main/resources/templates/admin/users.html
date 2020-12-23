@@ -14,68 +14,166 @@
 
 </head>
 <body>
+<div class="container">
+    <div class="row">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
 
 
-<div class="container text-center mt-5">
-    <p1 class="h3 mb-3 font-weight-normal">User list</p1>
+                <div class="d-flex justify-content-start"><a
+                        th:text="|${currentUser.username} with roles: |">USERNAME</a>
 
-    <div class="text-center mt-5">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th>Id</th>
-                <th>Username</th>
-                <th>Password</th>
-                <th>Role</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-            </thead>
-            <tbody class="table table-light table-striped table-info table-hover table-sm">
+                    <a th:each="role: ${currentUser.getRoles()}">
+                        <div class="d-flex justify-content-start"><a th:text="${role.getName()} ">role</a></div>
+                    </a>
+                </div>
 
-            <div th:each="user : ${users}">
-                <tr>
-                    <td th:text="${user.id}">ID</td>
+                <form class="d-flex" th:method="POST" th:action="@{/logout}">
+                    <input type="submit" value="Logout" class="btn btn-outline-success">
 
-                    <td><a th:href="@{/admin/{id}(id=${user.getId()})}" th:text="${user.getUsername()}">user></a></td>
-                    <td th:text="${user.getPassword()}">password</td>
-                    <td>
-                        <table>
-                            <tr th:each="role: ${user.getRoles()}">
-                                <div th:text="${role.getName()}">role</div>
-                        </table>
-                    </td>
-                    <td>
-                        <form th:method="GET" th:action="@{/admin/{id}/edit(id=${user.getId()})}">
-                            <input type="submit" class="btn btn-outline-secondary" value="Edit user">
-                        </form>
-                    </td>
-                    <td>
-                        <form th:method="DELETE" th:action="@{/admin/{id}/delete(id=${user.getId()})}"
-                              th:object="${user}">
-                            <input type="submit" class="btn btn-warning" value="Delete user">
-                        </form>
-                    </td>
-                </tr>
+                </form>
             </div>
-
-            </tbody>
-        </table>
+        </nav>
     </div>
 
-    <div>
-        <a href="/admin/new" class="btn btn-primary btn-lg">Create new user</a>
-        <form th:method="POST" th:action="@{/logout}">
-            <input type="submit" value="Logout" class="btn btn-primary btn-lg mt-3">
-        </form>
+    <div class="row">
+        <div class="col-2">
+
+            <ul class="nav nav-pills nav-fill mt-4" aria-orientation="vertical">
+                <div class="column">
+                    <li class="nav-item">
+
+                        <a class="nav-link active" aria-current="page" href="#">Admin</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/user/userspace/{id}(id=${currentUser.getId()})}">User</a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+
+
+        <div class="col-8  text-center">
+            <div class="mt-4 mb-4">
+                <h1>Admin panel</h1>
+            </div>
+            <div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">User table</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/new">New user</a>
+                    </li>
+                </ul>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody class="table table-light table-striped table-info table-hover table-sm">
+
+                <div th:each="user : ${users}">
+                    <tr>
+                        <td th:text="${user.id}">ID</td>
+
+                        <td><a th:href="@{/admin/{id}(id=${user.getId()})}" th:text="${user.getUsername()}">user></a>
+                        </td>
+                        <td th:text="${user.getPassword()}">password</td>
+                        <td>
+                            <table>
+                                <tr th:each="role: ${user.getRoles()}">
+                                    <div th:text="${role.getName()}">role</div>
+                            </table>
+                        </td>
+                        <td>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal"
+                                    th:attr="data-bs-target='#modal-warning'+${user.id }">>
+                                 modal
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" th:id="modal-warning+${user.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        < class="modal-body">
+                                            <form th:method="PATCH" th:action="@{/admin/users/{id}(id=${user.getId()})}" th:object="${user}"
+                                                  style="max-width: 400px; margin: auto">
+
+
+
+                                                <h1 class="h3 mb-3 font-weight-normal">Edit user</h1>
+                                                <div class="text-center mt-5">
+
+                                                    <label for="login" class="sr-only">Username</label>
+                                                    <input type="text" th:field="*{username}" id="login" class="form-control" required
+                                                           autofocus/>
+
+                                                    <label for="password" class="sr-only">Password</label>
+                                                    <input type="text" th:field="*{password}" id="password" class="form-control"/>
+
+                                                    <div class="mt-3">
+                                                        <label>Roles:</label>
+                                                        <div class="form-check mt-3" th:each="role : ${showRoles}">
+                                                            <div>   <input class="form-check-input form-switch" type="checkbox" name="roles"
+
+                                                                           th:text="${role.name}"
+                                                                           th:value="${role.id}"
+                                                                           th:field="*{roles}"
+                                                            /></div>
+                                                        </div>
+                                                        <input type="hidden"
+                                                               name="${_csrf.parameterName}"
+                                                               value="${_csrf.token}"/>
+                                                        <input type="submit" value="Update user info" class="btn btn-warning btn-lg mt-3">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+
+
+                        </td>
+                        <td>
+                            <form th:method="DELETE" th:action="@{/admin/{id}/delete(id=${user.getId()})}"
+                                  th:object="${user}">
+                                <input type="submit" class="btn btn-warning" value="Delete user">
+                            </form>
+                        </td>
+                    </tr>
+
+                </div>
+                </tbody>
+            </table>
+
+        </div>
     </div>
 </div>
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
-        integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"
-        integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj"
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
         crossorigin="anonymous"></script>
 </body>
 </html>
